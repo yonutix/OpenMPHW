@@ -1,0 +1,139 @@
+Tema 1 APD
+Nume: Mihai
+Prenume: Ionut Cosmin
+Grupa: 342C4
+
+----------------------
+Continut arhiva
+----------------------
+Arhiva are urmatoarea structura:
+
+arhiva
+|
++-parallel
+|		|
+|		+-lib.h
+|		|
+|		+-main.cpp
++-secvential
+|		|
+|		+-lib.h
+|		|
+|		+-main.cpp
++-secv_opt
+|		|
+|		+-lib.h
+|		|
+|		+-main.cpp
++-Makefile
+|
++-README
+
+Makefile-ul o sa genereze in folderul radacina 3 binare care reprezinta
+rezolvarea celor 3 probleme.
+
+----------------------
+Descriere generala
+----------------------
+Pentru varianta secventiala am descompus problema in metode mai simple.
+Metoda cu complexitatea cea mai mare este getNextColour.
+Pentru varianta secventiala caut toate pozitiile si apoi calculez minimul,
+apoi pentru varianta optimizata caut incepand de la distanta cea mai mica si ma
+opresc cand am gasit culoarea necesara.
+Pentru parcurgerea saptamanilor folosesc 2 zone de memorie pe care le 
+interschimb la fiecare iteratie.
+
+Pentru varianta paralela am paralelizat parcurgerea matricii pentru aflarea
+culorii care urmeaza saptamana viitoare si aflarea numarului senatorilor.
+La aflarea culorii urmatoare exista 2 parti: una de citire in care se afla
+culoarea si care se paote executa concurent si una de bifare a culorilor
+gasite.Operatiunea de bifare trebuie neaparat inclusa intr-o regiune critica.
+Numarul senatorilor a putut fi paralelizat folosind reduce si liniarizarea celor
+doua foruri pentru parcurgerea matricii intr-unul singur, alternativa ar fi fost
+folosirea regiunii critice care nu ar fi insemnat o paralelizare prorpiuzisa.
+
+Datorita timpului limitat nu am folosit alte genuri de optimizari.
+In privinta testarii, conditiile din tema sunt toate indeplinite dupa cum urmeaza:
+
+-------------------------------
+Sistemul folosit pentru testare
+-------------------------------
+Procesor: Intel® Core™ i7-2600 CPU @ 3.40GHz
+Kernel: Linux 3.2.0-53-generic
+SO: Ubuntu 12.04
+RAM: 8GB
+Dimensiunea cache-ului folosind getconf LEVEL1_DCACHE_LINESIZE este 64
+
+Compilator: 
+$:~/tema1apd/apd$ g++ -v
+Using built-in specs.
+COLLECT_GCC=g++
+Target: x86_64-linux-gnu
+Thread model: posix
+gcc version 4.6.3 (Ubuntu/Linaro 4.6.3-1ubuntu5) 
+
+----------------
+Scalare
+----------------
+Programul scaleaza foarte bine. Cele mai conludente teste sunt pentru matricea
+100x100, 100 saptamani:
+
+1 thread:
+15.519s
+
+2 threaduri:
+8.964
+
+3 threaduri:
+6.522
+
+
+4 threaduri:
+5.153
+
+_______________________________________________
+Speed-up-uri pentru varianta paralela:
+1-2 threaduri : speed-up 1.73
+2-4 threaduri : 1.73
+
+
+_______________________________________________
+Speed-up-uri paralelizare:
+secvential-secvential(optimizat): 8.97
+secvential(optimizat)-paralel(4threaduri): 3.28
+
+Asadar exista scalare
+
+----------------
+Timpi obtinuti:
+----------------
+
+Secvential:
+
+------------------------------------------------
+Dimensiune matrice | Nr Sapt. | Timp rulare(s) |
+------------------------------------------------
+100x100            |  100     |  139.765       |
+50x50              |  60      |    5.848       |
+10x10              |  10      |    0.007       |
+------------------------------------------------
+
+Secvential optimizat:
+
+------------------------------------------------
+Dimensiune matrice | Nr Sapt. | Timp rulare(s) |
+------------------------------------------------
+100x100            |  100     |   15.567       |
+50x50              |  60      |    0.870       |
+10x10              |  10      |    0.004       |
+------------------------------------------------
+
+Paralel:
+
+------------------------------------------------
+Dimensiune matrice | Nr Sapt. | Timp rulare(s) |
+------------------------------------------------
+100x100            |  100     |    4.732       |
+50x50              |  60      |    0.356       |
+10x10              |  10      |    0.004       |
+------------------------------------------------
